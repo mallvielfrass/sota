@@ -2,6 +2,7 @@ import {
   Controller,
   Get,
   HttpException,
+  Param,
   Put,
   Req,
   UseGuards,
@@ -28,13 +29,13 @@ export class UserController {
     return { user: this.userService.convertIUserToDto(user) };
   }
   @Get('/:id')
-  async getUserById(@Req() req) {
+  async getUserById(@Req() req, @Param('id') id) {
     const payload = req['user'];
     const { userId } = payload;
     if (!userId) {
       throw new HttpException('Not found', 404);
     }
-    const user = await this.userService.findUserById(userId);
+    const user = await this.userService.findUserById(id);
     if (!user) {
       throw new HttpException('Not found', 404);
     }
