@@ -2,15 +2,19 @@ import * as mongoose from 'mongoose';
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { HydratedDocument } from 'mongoose';
 export interface IUser extends mongoose.Document {
-  email: String;
-  username: String;
-  isDeleted?: Boolean;
-  isBanned?: Boolean;
-  hash: String;
+  email: string;
+  username: string;
+  isDeleted?: boolean;
+  isBanned?: boolean;
+  firstName?: string;
+  lastName?: string;
+  hash: string;
 }
 export const userSchema = new mongoose.Schema({
   email: String,
   username: String,
+  firstName: String,
+  lastName: String,
   isDeleted: Boolean,
   isBanned: Boolean,
   hash: String,
@@ -25,6 +29,10 @@ export class User {
   hash: string;
   @Prop()
   username: string;
+  @Prop()
+  firstName: string;
+  @Prop()
+  lastName: string;
   @Prop()
   isDeleted: boolean;
   @Prop()

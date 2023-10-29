@@ -10,6 +10,7 @@ import { MongooseModule } from '@nestjs/mongoose';
 import { db_url, jwtSecret } from './const';
 import { UserSchema } from './user/user.schema';
 import { JwtModule, JwtService } from '@nestjs/jwt';
+import { UserController } from './user/user.controller';
 
 @Module({
   imports: [
@@ -21,7 +22,7 @@ import { JwtModule, JwtService } from '@nestjs/jwt';
       },
     ]),
   ],
-  controllers: [AppController, AuthController],
+  controllers: [AppController, AuthController, UserController],
   providers: [AppService, AuthService, UserService, JwtService],
 })
 export class AppModule {}
