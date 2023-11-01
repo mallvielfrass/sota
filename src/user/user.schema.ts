@@ -1,15 +1,8 @@
 import * as mongoose from 'mongoose';
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { HydratedDocument } from 'mongoose';
-export interface IUser extends mongoose.Document {
-  email: string;
-  username: string;
-  isDeleted?: boolean;
-  isBanned?: boolean;
-  firstName?: string;
-  lastName?: string;
-  hash: string;
-}
+import { Dialog } from 'src/dialog/dialog.schema';
+
 export const userSchema = new mongoose.Schema({
   email: String,
   username: String,
@@ -21,6 +14,7 @@ export const userSchema = new mongoose.Schema({
 });
 
 export type UserDocument = HydratedDocument<User>;
+
 @Schema()
 export class User {
   @Prop()
@@ -37,6 +31,8 @@ export class User {
   isDeleted: boolean;
   @Prop()
   isBanned: boolean;
+
+  dialogs: Dialog[];
 }
 export const UserSchema = SchemaFactory.createForClass(User);
 // export const CatSchema = SchemaFactory.createForClass(Cat);
