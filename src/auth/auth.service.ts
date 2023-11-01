@@ -1,6 +1,6 @@
 import { Inject, Injectable } from '@nestjs/common';
 import { Model } from 'mongoose';
-import { IUser, User } from 'src/user/user.schema';
+import { User, UserDocument } from 'src/user/user.schema';
 import { UserService } from 'src/user/user.service';
 import { ComparePassword, EncryptPassword } from 'src/utils/crypto/crypto';
 import { JwtService } from '@nestjs/jwt';
@@ -8,7 +8,7 @@ import { expireJwtShiftSeconds, jwtSecret } from 'src/const';
 //import { IUser } from 'src/database/user.schema';
 interface responseUser {
   success: boolean;
-  User: IUser;
+  User: UserDocument;
   token: string;
 }
 @Injectable()
