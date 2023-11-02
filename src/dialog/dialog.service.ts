@@ -246,8 +246,11 @@ export class DialogService {
         if (!Array.isArray(dialogsListRaw)) {
             return [];
         }
-
+        const privateChats = [];
         const dialogsList: dialogResponse[] = dialogsListRaw.map((dialog) => {
+            if (dialog?.dialog?.chatType == DialogType.private) {
+                privateChats.push(dialog?.dialog?._id);
+            }
             return {
                 _id: dialog?.dialog?._id || '',
                 chatType: dialog?.dialog?.chatType || '',
