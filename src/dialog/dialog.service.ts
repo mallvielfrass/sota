@@ -92,12 +92,12 @@ export class DialogService {
         if (!secondCompanion) {
             return { error: 'companion not found' };
         }
-
+        //  console.log({ companionId: firstCompanion, userId: user });
         dialog.companions.push(
             { companionId: firstCompanion, userId: user },
-            { companionId: secondCompanion, userId: userTwo },
+            // { companionId: secondCompanion, userId: userTwo },
         );
-
+        //   console.log('companions', dialog.companions);
         await dialog.save();
 
         user.dialogs.push({
@@ -107,6 +107,11 @@ export class DialogService {
 
         await user.save();
         if (userTwo._id.toString() !== user._id.toString()) {
+            dialog.companions.push(
+                //  { companionId: firstCompanion, userId: user },
+                { companionId: secondCompanion, userId: userTwo },
+            );
+
             userTwo.dialogs.push({
                 readedMessage: 0,
                 dialog: dialog,
