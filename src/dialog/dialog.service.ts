@@ -79,7 +79,7 @@ export class DialogService {
                 readedMessage: 0,
                 dialog: dialog,
             });
-        await userTwo.save();
+            await userTwo.save();
         }
 
         return { dialog };
@@ -101,6 +101,12 @@ export class DialogService {
             messages: [],
             companions: [],
         });
+        owner.dialogs.push({
+            readedMessage: 0,
+            dialog: dialog,
+        });
+
+        await owner.save();
         const admin = await this.dialogAdminService.createAdmin(
             dialog._id.toString(),
             ownerId,
@@ -115,6 +121,8 @@ export class DialogService {
             { deleteMessage: true, BanUser: true, allowSetPrivillegies: true },
         );
         dialog.admins.push(admin);
+        await dialog.save();
+
         const companions = await this.companionService.createCompanions(
             dialog._id.toString(),
             findedUsers,
