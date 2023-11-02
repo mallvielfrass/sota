@@ -21,48 +21,48 @@ import { User } from 'src/user/user.schema';
 //}
 
 export const companionSchema = new mongoose.Schema({
-  user: {
-    type: mongoose.Schema.Types.ObjectId,
-    ref: 'User',
-  },
-  dialog: {
-    type: mongoose.Schema.Types.ObjectId,
-    ref: 'Dialog',
-  },
-  status: {
-    type: String,
-    enum: ['user', 'admin', 'owner'],
-  },
-  permission: {
-    read: {
-      type: Boolean,
-      default: false,
+    user: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'User',
     },
-    write: {
-      type: Boolean,
-      default: false,
+    dialog: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'Dialog',
     },
-  },
+    status: {
+        type: String,
+        enum: ['user', 'admin', 'owner'],
+    },
+    permission: {
+        read: {
+            type: Boolean,
+            default: false,
+        },
+        write: {
+            type: Boolean,
+            default: false,
+        },
+    },
 });
 export type CompanionDocument = HydratedDocument<Companion>;
 @Schema()
 export class Companion {
-  @Prop()
-  user: User;
-  @Prop()
-  dialog: string;
-  @Prop()
-  status: string;
-  @Prop({
-    type: () => ({
-      read: Boolean,
-      write: Boolean,
-    }),
-  })
-  permission: {
-    read: boolean;
-    write: boolean;
-  };
+    @Prop()
+    user: User;
+    @Prop()
+    dialog: string;
+    @Prop()
+    status: string;
+    @Prop({
+        type: () => ({
+            read: Boolean,
+            write: Boolean,
+        }),
+    })
+    permission: {
+        read: boolean;
+        write: boolean;
+    };
 }
 
 export const CompanionSchema = SchemaFactory.createForClass(Companion);

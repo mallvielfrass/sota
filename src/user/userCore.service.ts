@@ -5,13 +5,13 @@ import { User } from './user.schema';
 
 @Injectable()
 export class UserCoreService {
-  constructor(@InjectModel(User.name) private userModel: Model<User>) {}
-  async findUserById(_id: string) {
-    const user = await this.userModel.findById(_id);
-    return user;
-  }
-  async findUsersByIds(ids: string[]) {
-    const users = await this.userModel.find({ _id: { $in: ids } });
-    return users;
-  }
+    constructor(@InjectModel(User.name) private userModel: Model<User>) {}
+    async findUserById(_id: string) {
+        const user = await this.userModel.findById(_id);
+        return user;
+    }
+    async findUsersByIds(ids: string[]) {
+        const users = await this.userModel.find({ _id: { $in: ids } });
+        return users;
+    }
 }

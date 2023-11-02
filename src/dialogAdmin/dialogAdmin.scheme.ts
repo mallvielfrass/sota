@@ -18,23 +18,23 @@ import { userStatus } from './dialogAdmin.types';
 
 @Schema()
 export class DialogAdmin {
-  @Prop()
-  dialogId: Dialog;
-  @Prop()
-  userId: User;
-  @Prop({ enum: userStatus })
-  status: userStatus;
-  @Prop({
-    type: () => ({
-      deleteMessage: Boolean,
-      BanUser: Boolean,
-      allowSetPrivillegies: Boolean,
-    }),
-  })
-  privillegies: {
-    deleteMessage: boolean;
-    BanUser: boolean;
-    allowSetPrivillegies: boolean;
-  };
+    @Prop()
+    dialogId: Dialog;
+    @Prop()
+    userId: User;
+    @Prop({ enum: userStatus })
+    status: userStatus;
+    @Prop({
+        type: () => ({
+            deleteMessage: Boolean,
+            BanUser: Boolean,
+            allowSetPrivillegies: Boolean,
+        }),
+    })
+    privillegies: {
+        deleteMessage: boolean;
+        BanUser: boolean;
+        allowSetPrivillegies: boolean;
+    };
 }
 export const DialogAdminSchema = SchemaFactory.createForClass(DialogAdmin);
