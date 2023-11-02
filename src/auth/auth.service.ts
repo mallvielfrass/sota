@@ -1,14 +1,14 @@
-import { Inject, Injectable } from '@nestjs/common';
-import { Model } from 'mongoose';
-import { User, UserDocument } from 'src/user/user.schema';
-import { UserService } from 'src/user/user.service';
-import { ComparePassword, EncryptPassword } from 'src/utils/crypto/crypto';
-import { JwtService } from '@nestjs/jwt';
+import { Injectable } from '@nestjs/common';
 import { expireJwtShiftSeconds, jwtSecret } from 'src/const';
+import { IUser } from 'src/user/user.schema';
+import { ComparePassword, EncryptPassword } from 'src/utils/crypto/crypto';
+
+import { JwtService } from '@nestjs/jwt';
+import { UserService } from 'src/user/user.service';
 //import { IUser } from 'src/database/user.schema';
 interface responseUser {
     success: boolean;
-    User: UserDocument;
+    User: IUser;
     token: string;
 }
 @Injectable()

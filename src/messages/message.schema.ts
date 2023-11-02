@@ -1,6 +1,10 @@
 import * as mongoose from 'mongoose';
+
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
+
 import { HydratedDocument } from 'mongoose';
+import { IDialog } from '../dialog/dialog.schema';
+import { IUser } from '../user/user.schema';
 
 // message:{
 
@@ -31,12 +35,17 @@ export const messageSchema = new mongoose.Schema({
     Id: String,
     counterNumber: Number,
 });
-export type MessageDocument = HydratedDocument<Message>;
+export type IMessage = HydratedDocument<Message>;
 
 @Schema()
 export class Message {
-    @Prop()
-    chatId: string;
+    @Prop({
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'Dialog',
+    })
+    dialog: IDialog;
+    @Prop({ type: mongoose.Schema.Types.ObjectId, ref: 'User' })
+    user: IUser;
     @Prop()
     type: string;
     @Prop()

@@ -1,15 +1,16 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import mongoose, { HydratedDocument } from 'mongoose';
 
-import { Companion } from 'src/companion/companion.schema';
-import { Message } from 'src/messages/message.schema';
-import { DialogAdmin } from '../dialogAdmin/dialogAdmin.scheme';
-import { User } from './../user/user.schema';
+import { ICompanion } from '../companion/companion.schema';
+import { IDialogAdmin } from '../dialogAdmin/dialogAdmin.scheme';
+import { IMessage } from '../messages/message.schema';
+import { IUser } from '../user/user.schema';
 
-export type DialogDocument = HydratedDocument<Dialog>;
+export type IDialog = HydratedDocument<Dialog>;
 @Schema()
 export class Dialog {
     @Prop({
+        default: [],
         type: () => [
             {
                 companionId: {
@@ -24,18 +25,21 @@ export class Dialog {
         ],
     })
     companions: {
-        companionId: Companion;
-        userId: User;
+        companionId: ICompanion;
+        userId: IUser;
     }[];
 
     @Prop()
     chatType: string;
-    @Prop()
-    messages: Message[];
-    @Prop()
-    owner: User;
-    @Prop()
-    admins: DialogAdmin[];
+    @Prop({ default: [], type: mongoose.Schema.Types.ObjectId, ref: 'Message' })
+    messages: IMessage[];
+    @Prop({ type: mongoose.Schema.Types.ObjectId, ref: 'User' })
+    owner: IUser;
+    @Prop({
+        default: [],
+        type: [{ type: mongoose.Schema.Types.ObjectId, ref: 'DialogAdmin' }],
+    })
+    admins: IDialogAdmin[];
 }
 
 export const DialogSchema = SchemaFactory.createForClass(Dialog);

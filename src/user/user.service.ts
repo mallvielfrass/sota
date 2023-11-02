@@ -1,8 +1,8 @@
-import { Inject, Injectable } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
-import { User, UserDocument } from './user.schema';
 import { UserDto, UserResponse } from './user.dto';
+import { IUser, User } from './user.schema';
 
 @Injectable()
 export class UserService {
@@ -24,7 +24,7 @@ export class UserService {
     }
     async updateUser(_id: string, user: UserDto) {
         const { firstName, lastName } = user;
-        let obj = {};
+        const obj = {};
         if (firstName) {
             obj['firstName'] = firstName;
         }
@@ -34,7 +34,7 @@ export class UserService {
         const updatedUser = await this.userModel.findByIdAndUpdate(_id, obj);
         return updatedUser;
     }
-    convertIUserToDto(user: UserDocument): UserResponse {
+    convertIUserToDto(user: IUser): UserResponse {
         return {
             email: user.email.toString(),
             _id: user._id.toString(),

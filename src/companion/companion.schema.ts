@@ -3,7 +3,8 @@ import * as mongoose from 'mongoose';
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 
 import { HydratedDocument } from 'mongoose';
-import { User } from 'src/user/user.schema';
+import { IDialog } from '../dialog/dialog.schema';
+import { IUser } from '../user/user.schema';
 
 //companion:{
 // User > User
@@ -44,13 +45,13 @@ export const companionSchema = new mongoose.Schema({
         },
     },
 });
-export type CompanionDocument = HydratedDocument<Companion>;
+export type ICompanion = HydratedDocument<Companion>;
 @Schema()
 export class Companion {
-    @Prop()
-    user: User;
-    @Prop()
-    dialog: string;
+    @Prop({ type: mongoose.Schema.Types.ObjectId, ref: 'User' })
+    user: IUser;
+    @Prop({ type: mongoose.Schema.Types.ObjectId, ref: 'Dialog' })
+    dialog: IDialog;
     @Prop()
     status: string;
     @Prop({

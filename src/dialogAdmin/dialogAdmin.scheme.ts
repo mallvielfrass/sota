@@ -1,4 +1,5 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
+import mongoose, { HydratedDocument } from 'mongoose';
 
 import { Dialog } from '../dialog/dialog.schema';
 //import { HydratedDocument } from 'mongoose';
@@ -15,13 +16,13 @@ import { userStatus } from './dialogAdmin.types';
 //     allowSetPrivillegies: boolean;
 //   };
 // }
-
+export type IDialogAdmin = HydratedDocument<DialogAdmin>;
 @Schema()
 export class DialogAdmin {
-    @Prop()
-    dialogId: Dialog;
-    @Prop()
-    userId: User;
+    @Prop({ type: mongoose.Schema.Types.ObjectId, ref: 'Dialog' })
+    dialog: Dialog;
+    @Prop({ type: mongoose.Schema.Types.ObjectId, ref: 'User' })
+    user: User;
     @Prop({ enum: userStatus })
     status: userStatus;
     @Prop({

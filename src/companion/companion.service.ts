@@ -1,8 +1,8 @@
 import { Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
-import { DialogDocument } from '../dialog/dialog.schema';
-import { UserDocument } from '../user/user.schema';
+import { IDialog } from '../dialog/dialog.schema';
+import { IUser } from '../user/user.schema';
 import { Companion } from './companion.schema';
 
 @Injectable()
@@ -12,14 +12,14 @@ export class CompanionService {
         private readonly companionModel: Model<Companion>,
     ) {}
 
-    async createCompanion(dialog: DialogDocument, user: UserDocument) {
+    async createCompanion(dialog: IDialog, user: IUser) {
         const companion = await this.companionModel.create({
             dialog: dialog,
             user: user,
         });
         return companion;
     }
-    async createCompanions(chatId: string, userIds: UserDocument[]) {
+    async createCompanions(chatId: string, userIds: IUser[]) {
         const companions = await this.companionModel.insertMany(
             userIds.map((user) => ({ chatId, userId: user._id.toString() })),
         );
@@ -32,7 +32,7 @@ export class CompanionService {
         });
         return companion;
     }
-    async getOrCreateCompanion(dialog: DialogDocument, user: UserDocument) {
+    async getOrCreateCompanion(dialog: IDialog, user: IUser) {
         const companion = await this.getCompanionByChatIdAndUserId(
             dialog._id.toString(),
             user._id.toString(),
