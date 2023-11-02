@@ -26,11 +26,11 @@ export class DialogAdmin {
     @Prop({ enum: userStatus })
     status: userStatus;
     @Prop({
-        type: () => ({
+        type: {
             deleteMessage: Boolean,
             BanUser: Boolean,
             allowSetPrivillegies: Boolean,
-        }),
+        },
     })
     privillegies: {
         deleteMessage: boolean;

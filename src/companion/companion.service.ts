@@ -13,6 +13,7 @@ export class CompanionService {
     ) {}
 
     async createCompanion(dialog: IDialog, user: IUser) {
+        //   console.log('createCompanion', dialog, user);
         const companion = await this.companionModel.create({
             dialog: dialog,
             user: user,
@@ -27,8 +28,8 @@ export class CompanionService {
     }
     async getCompanionByChatIdAndUserId(chatId: string, userId: string) {
         const companion = await this.companionModel.findOne({
-            chatId: chatId,
-            userId: userId,
+            dialog: chatId,
+            user: userId,
         });
         return companion;
     }
@@ -37,6 +38,7 @@ export class CompanionService {
             dialog._id.toString(),
             user._id.toString(),
         );
+        //  console.log('getOrCreateCompanion>companion', companion);
         if (!companion) {
             return await this.createCompanion(dialog, user);
         }

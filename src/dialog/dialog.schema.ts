@@ -11,7 +11,7 @@ export type IDialog = HydratedDocument<Dialog>;
 export class Dialog {
     @Prop({
         default: [],
-        type: () => [
+        type: [
             {
                 companionId: {
                     type: mongoose.Schema.Types.ObjectId,

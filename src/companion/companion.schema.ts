@@ -55,10 +55,14 @@ export class Companion {
     @Prop()
     status: string;
     @Prop({
-        type: () => ({
+        type: {
             read: Boolean,
             write: Boolean,
-        }),
+        },
+        default: {
+            read: true,
+            write: true,
+        },
     })
     permission: {
         read: boolean;
