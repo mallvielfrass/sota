@@ -112,4 +112,87 @@ export class DialogService {
         await dialog.save();
         return { dialog };
     }
+    async getChatsList(userId: string, offset: number, limit: number) {
+        const user = await this.userCoreService.findUserById(userId);
+        if (!user) {
+            return { error: 'user not found' };
+        }
+
+        const res = await this.userModel.aggregate([
+            //find  user by id
+            { $match: { _id: user._id } },
+            //paginate dialogs
+            {
+                $project: {
+                    dialogs: {
+                        $slice: ['$dialogs', offset, limit],
+                    },
+                },
+            },
+            //join dialogs info as array dialogsList
+            {
+                $lookup: {
+                    from: 'dialogs',
+                    localField: 'dialogs.dialog',
+                    foreignField: '_id',
+                    as: 'dialogsList',
+                },
+            },
+            //merge field readedMessage  and dialog to dialogsList <{readedMessage: {readedMessage: number}, dialog: IDialog} >
+            {
+                $addFields: {
+                    dialogsList: {
+                        $map: {
+                            input: '$dialogsList',
+                            as: 'dialog',
+                            in: {
+                                readedMessage: {
+                                    $arrayElemAt: [
+                                        {
+                                            $filter: {
+                                                input: '$dialogs',
+                                                as: 'dialogItem',
+                                                cond: {
+                                                    $eq: [
+                                                        '$$dialogItem.dialog',
+                                                        '$$dialog._id',
+                                                    ],
+                                                },
+                                            },
+                                        },
+                                        0,
+                                    ],
+                                },
+                                dialog: '$$dialog',
+                            },
+                        },
+                    },
+                },
+            },
+            //hide unwanted fields
+            {
+                $project: {
+                    dialogsList: 1,
+                },
+            },
+        ]);
+
+        const dialogsListRaw = res.length == 1 ? res[0].dialogsList : [];
+        if (dialogsListRaw.length === 0) {
+            return [];
+        }
+        if (!Array.isArray(dialogsListRaw)) {
+            return [];
+        }
+
+        const dialogsList: dialogResponse[] = dialogsListRaw.map((dialog) => {
+            return {
+                _id: dialog?.dialog?._id || '',
+                chatType: dialog?.dialog?.chatType || '',
+                name: dialog?.dialog?.name || '',
+                readedMessage: dialog?.readedMessage?.readedMessage || 0,
+            };
+        });
+        return dialogsList;
+    }
 }

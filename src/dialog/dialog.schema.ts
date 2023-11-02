@@ -28,10 +28,14 @@ export class Dialog {
         companionId: ICompanion;
         userId: IUser;
     }[];
-
+    @Prop()
+    name: string;
     @Prop()
     chatType: string;
-    @Prop({ default: [], type: mongoose.Schema.Types.ObjectId, ref: 'Message' })
+    @Prop({
+        default: [],
+        type: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Message' }],
+    })
     messages: IMessage[];
     @Prop({ type: mongoose.Schema.Types.ObjectId, ref: 'User' })
     owner: IUser;

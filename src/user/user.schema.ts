@@ -35,9 +35,23 @@ export class User {
     isBanned: boolean;
     @Prop({
         default: [],
-        type: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Dialog' }],
+        type: [
+            {
+                readedMessage: {
+                    type: Number,
+                    default: 0,
+                },
+                dialog: {
+                    type: mongoose.Schema.Types.ObjectId,
+                    ref: 'Dialog',
+                },
+            },
+        ],
     })
-    dialogs: IDialog[];
+    dialogs: {
+        readedMessage: number;
+        dialog: IDialog;
+    }[];
 }
 export const UserSchema = SchemaFactory.createForClass(User);
 // export const CatSchema = SchemaFactory.createForClass(Cat);

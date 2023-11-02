@@ -12,7 +12,21 @@ import { DialogService } from './dialog.service';
 @Controller('/api/dialog')
 @UseGuards(AuthGuard)
 export class DialogController {
-    constructor(private readonly dialogService: DialogService) {}
+    //list of dialogs
+    @Get('/')
+    async listDialogs(@Req() req) {
+        const payload = req['user'];
+        const { userId } = payload;
+        if (!userId) {
+            throw new HttpException('Not found', 404);
+        }
+        // const dialogsResp: dialogResponse[] = [];
+        const chats = await this.dialogService.getChatsList(userId, 0, 100);
+
+        return {
+            dialogs: chats,
+        };
+    }
     //createDialog
     @Post('/private/:companionId')
     async createDialog(@Req() req, @Param('companionId') companionId) {
