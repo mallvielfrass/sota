@@ -1,7 +1,10 @@
-import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import * as mongoose from 'mongoose';
+
+import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
+
 import { HydratedDocument } from 'mongoose';
-import { User, UserDocument } from 'src/user/user.schema';
+import { User } from 'src/user/user.schema';
+
 //companion:{
 // User > User
 // status: user/admin/owner
@@ -22,6 +25,10 @@ export const companionSchema = new mongoose.Schema({
     type: mongoose.Schema.Types.ObjectId,
     ref: 'User',
   },
+  dialog: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'Dialog',
+  },
   status: {
     type: String,
     enum: ['user', 'admin', 'owner'],
@@ -36,26 +43,14 @@ export const companionSchema = new mongoose.Schema({
       default: false,
     },
   },
-  privillegies: {
-    deleteMessage: {
-      type: Boolean,
-      default: false,
-    },
-    BanUser: {
-      type: Boolean,
-      default: false,
-    },
-    allowSetPrivillegies: {
-      type: Boolean,
-      default: false,
-    },
-  },
 });
 export type CompanionDocument = HydratedDocument<Companion>;
 @Schema()
 export class Companion {
   @Prop()
   user: User;
+  @Prop()
+  dialog: string;
   @Prop()
   status: string;
   @Prop({
@@ -67,18 +62,6 @@ export class Companion {
   permission: {
     read: boolean;
     write: boolean;
-  };
-  @Prop({
-    type: () => ({
-      deleteMessage: Boolean,
-      BanUser: Boolean,
-      allowSetPrivillegies: Boolean,
-    }),
-  })
-  privillegies: {
-    deleteMessage: boolean;
-    BanUser: boolean;
-    allowSetPrivillegies: boolean;
   };
 }
 
