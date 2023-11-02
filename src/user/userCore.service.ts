@@ -10,4 +10,8 @@ export class UserCoreService {
     const user = await this.userModel.findById(_id);
     return user;
   }
+  async findUsersByIds(ids: string[]) {
+    const users = await this.userModel.find({ _id: { $in: ids } });
+    return users;
+  }
 }
