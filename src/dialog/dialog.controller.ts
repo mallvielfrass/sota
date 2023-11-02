@@ -45,7 +45,7 @@ export class DialogController {
         // if (finded) {
         //   throw new HttpException('Already exist', 400);
         // }
-        const res = await this.dialogService.createPrivateDialog(
+        const res = await this.dialogService.getOrCreatePrivateDialog(
             userId,
             userId,
         );
@@ -89,7 +89,7 @@ export class DialogController {
         // if (finded) {
         //   throw new HttpException('Already exist', 400);
         // }
-        const res = await this.dialogService.createPrivateDialog(
+        const res = await this.dialogService.getOrCreatePrivateDialog(
             userId,
             companionId,
         );

@@ -30,18 +30,25 @@ export class DialogService {
         return dialog;
     }
     //createPrivateDialog
-    async createPrivateDialog(userId: string, userTwoId: string) {
+    async getOrCreatePrivateDialog(userId: string, userTwoId: string) {
         const user = await this.userCoreService.findUserById(userId);
         const userTwo = await this.userCoreService.findUserById(userTwoId);
         if (!user || !userTwo) {
             return { error: 'user not found' };
         }
         // console.log('users:', user, userTwo);
-
-        const dialog = await this.dialogModel.create({
+        const findedDialog = await this.getPrivateChat(userId, userTwoId);
+        if (findedDialog) {
+            return { dialog: findedDialog };
+        }
+        const query = {
             chatType: DialogType.private,
             owner: user,
-        });
+        };
+        if (userId === userTwoId) {
+            query.chatType = DialogType.self;
+        }
+        const dialog = await this.dialogModel.create(query);
         let dialogName = `chat#${dialog._id.toString()}`;
         if (userId === userTwoId) {
             dialogName = 'savedMessages';
