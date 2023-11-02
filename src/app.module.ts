@@ -1,22 +1,22 @@
+import { DialogSchema } from './dialog/dialog.schema';
+
 import { Module } from '@nestjs/common';
+import { JwtService } from '@nestjs/jwt';
+import { MongooseModule } from '@nestjs/mongoose';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { AuthController } from './auth/auth.controller';
 import { AuthService } from './auth/auth.service';
-import { UserService } from './user/user.service';
-import { AuthModule } from './auth/auth.module';
-import { UserModule } from './user/user.module';
-import { MongooseModule } from '@nestjs/mongoose';
-import { db_url, jwtSecret } from './const';
-import { UserSchema } from './user/user.schema';
-import { JwtModule, JwtService } from '@nestjs/jwt';
-import { UserController } from './user/user.controller';
+import { CompanionSchema } from './companion/companion.schema';
+import { CompanionService } from './companion/companion.service';
+import { db_url } from './const';
 import { DialogController } from './dialog/dialog.controller';
 import { DialogService } from './dialog/dialog.service';
-import { DialogSchema } from './dialog/dialog.schema';
-import { CompanionSchema } from './companion/companion.schema';
+import { DialogAdmin } from './dialogAdmin/dialogAdmin.scheme';
 import { MessageSchema } from './messages/message.schema';
-import { CompanionService } from './companion/companion.service';
+import { UserController } from './user/user.controller';
+import { UserSchema } from './user/user.schema';
+import { UserService } from './user/user.service';
 import { UserCoreService } from './user/userCore.service';
 
 @Module({
@@ -38,6 +38,10 @@ import { UserCoreService } from './user/userCore.service';
       {
         name: 'Message',
         schema: MessageSchema,
+      },
+      {
+        name: DialogAdmin.name,
+        schema: DialogSchema,
       },
     ]),
   ],
