@@ -20,13 +20,38 @@ export class DialogService {
     ) {}
     async getPrivateChat(userId: string, userTwoId: string) {
         //find chat where userId and companionId contains in companion array
-        const dialog = await this.dialogModel.findOne({
-            chatType: DialogType.private,
-            $and: [
-                { 'companion.userId': userId },
-                { 'companion.userId': userTwoId },
+
+        const and = [
+            {
+                companions: {
+                    $elemMatch: {
+                        userId: userId,
+                    },
+                },
+            },
+        ];
+        if (userId !== userTwoId) {
+            and.push({
+                companions: {
+                    $elemMatch: {
+                        userId: userTwoId,
+                    },
+                },
+            });
+        }
+        const searchRow = {
+            //chatType: DialogType.private or DialogType.self
+            $or: [
+                { chatType: DialogType.private },
+                { chatType: DialogType.self },
             ],
-        });
+
+            $and: and,
+        };
+        //  console.log(' getPrivateChat>searchRow', searchRow);
+        const dialog = await this.dialogModel.findOne(searchRow);
+
+        //  console.log(' getPrivateChat>dialog', dialog);
         return dialog;
     }
     //createPrivateDialog
