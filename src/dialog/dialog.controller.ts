@@ -1,5 +1,6 @@
 import {
     Controller,
+    Get,
     HttpException,
     Param,
     Post,
@@ -7,6 +8,7 @@ import {
     UseGuards,
 } from '@nestjs/common';
 import { AuthGuard } from 'src/auth/auth.guard';
+import { UserCoreService } from '../user/userCore.service';
 import { DialogService } from './dialog.service';
 
 @Controller('/api/dialog')
@@ -82,6 +84,7 @@ export class DialogController {
         if (!userId) {
             throw new HttpException('Not found', 404);
         }
+        // console.log('internal payload', payload);
         // const finded = await this.dialogService.getPrivateChat(userId, companionId);
         // if (finded) {
         //   throw new HttpException('Already exist', 400);
@@ -93,6 +96,28 @@ export class DialogController {
         if (res.error) {
             throw new HttpException(res.error, 400);
         }
-        return res;
+        //console.log('res', res);
+        const dialog = res.dialog;
+        //    console.log('userId', userId);
+        const yourCompanions = dialog.companions.filter((companion) => {
+            //    console.log('companion', companion);
+            return companion.userId._id.toString() !== userId;
+        });
+        const yourCompanionId = yourCompanions.length
+            ? yourCompanions[0].companionId.user._id.toString()
+            : userId;
+        const yourCompanion =
+            await this.userCoreService.findUserById(yourCompanionId);
+        return {
+            dialog: {
+                chatType: dialog.chatType,
+                owner: dialog.owner._id.toString(),
+                companion: {
+                    _id: yourCompanion._id.toString(),
+                    email: yourCompanion.email,
+                },
+                //   companions: dialog.companions,
+            },
+        };
     }
 }
