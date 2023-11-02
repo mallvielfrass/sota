@@ -12,6 +12,10 @@ import { DialogService } from './dialog.service';
 @Controller('/api/dialog')
 @UseGuards(AuthGuard)
 export class DialogController {
+    constructor(
+        private readonly dialogService: DialogService,
+        private readonly userCoreService: UserCoreService,
+    ) {}
     //list of dialogs
     @Get('/')
     async listDialogs(@Req() req) {
@@ -25,6 +29,49 @@ export class DialogController {
 
         return {
             dialogs: chats,
+        };
+    }
+    @Post('/self')
+    async createSelfChat(@Req() req) {
+        const payload = req['user'];
+        const { userId } = payload;
+        if (!userId) {
+            throw new HttpException('Not found', 404);
+        }
+        // console.log('internal payload', payload);
+        // const finded = await this.dialogService.getPrivateChat(userId, companionId);
+        // if (finded) {
+        //   throw new HttpException('Already exist', 400);
+        // }
+        const res = await this.dialogService.createPrivateDialog(
+            userId,
+            userId,
+        );
+        if (res.error) {
+            throw new HttpException(res.error, 400);
+        }
+        //console.log('res', res);
+        const dialog = res.dialog;
+        //    console.log('userId', userId);
+        const yourCompanions = dialog.companions.filter((companion) => {
+            //    console.log('companion', companion);
+            return companion.userId._id.toString() !== userId;
+        });
+        const yourCompanionId = yourCompanions.length
+            ? yourCompanions[0].companionId.user._id.toString()
+            : userId;
+        const yourCompanion =
+            await this.userCoreService.findUserById(yourCompanionId);
+        return {
+            dialog: {
+                chatType: dialog.chatType,
+                owner: dialog.owner._id.toString(),
+                companion: {
+                    _id: yourCompanion._id.toString(),
+                    email: yourCompanion.email,
+                },
+                //   companions: dialog.companions,
+            },
         };
     }
     //createDialog

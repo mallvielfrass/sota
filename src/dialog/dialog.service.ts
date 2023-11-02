@@ -7,7 +7,7 @@ import { CompanionService } from '../companion/companion.service';
 import { DialogAdminService } from '../dialogAdmin/dialogAdmin.service';
 import { userStatus } from '../dialogAdmin/dialogAdmin.types';
 import { Dialog } from './dialog.schema';
-import { DialogType } from './dialog.types';
+import { DialogType, dialogResponse } from './dialog.types';
 
 @Injectable()
 export class DialogService {
@@ -36,13 +36,18 @@ export class DialogService {
         if (!user || !userTwo) {
             return { error: 'user not found' };
         }
+        // console.log('users:', user, userTwo);
+
         const dialog = await this.dialogModel.create({
             chatType: DialogType.private,
             owner: user,
-            admins: [user, userTwo],
-            messages: [],
-            companions: [],
         });
+        let dialogName = `chat#${dialog._id.toString()}`;
+        if (userId === userTwoId) {
+            dialogName = 'savedMessages';
+        }
+        dialog.name = dialogName;
+        // console.log('debug');
         const firstCompanion = await this.companionService.getOrCreateCompanion(
             dialog,
             user,
@@ -55,16 +60,28 @@ export class DialogService {
         if (!secondCompanion) {
             return { error: 'companion not found' };
         }
+
         dialog.companions.push(
             { companionId: firstCompanion, userId: user },
             { companionId: secondCompanion, userId: userTwo },
         );
 
         await dialog.save();
-        user.dialogs.push(dialog);
+
+        user.dialogs.push({
+            readedMessage: 0,
+            dialog: dialog,
+        });
+
         await user.save();
-        userTwo.dialogs.push(dialog);
+        if (userTwo._id.toString() !== user._id.toString()) {
+            userTwo.dialogs.push({
+                readedMessage: 0,
+                dialog: dialog,
+            });
         await userTwo.save();
+        }
+
         return { dialog };
     }
     async createPublicDialog(ownerId: string, users: string[]) {
