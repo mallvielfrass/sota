@@ -1,10 +1,11 @@
-import { Injectable } from '@nestjs/common';
 import { expireJwtShiftSeconds, jwtSecret } from 'src/const';
-import { IUser } from 'src/user/user.schema';
 import { ComparePassword, EncryptPassword } from 'src/utils/crypto/crypto';
 
+import { Injectable } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
+import { IUser } from 'src/user/user.schema';
 import { UserService } from 'src/user/user.service';
+
 //import { IUser } from 'src/database/user.schema';
 interface responseUser {
     success: boolean;
@@ -74,5 +75,9 @@ export class AuthService {
             User: newUser,
             token: null,
         };
+    }
+    async getUserById(_id: string): Promise<NonNullable<IUser>> {
+        const user = await this.userService.findUserById(_id);
+        return user;
     }
 }

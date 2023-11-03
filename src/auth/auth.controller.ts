@@ -25,6 +25,7 @@ export class AuthController {
         }
         return {
             token: res.token,
+            status: 'success',
             user: {
                 email: res.User.email.toString(),
                 _id: res.User._id.toString(),
@@ -38,7 +39,7 @@ export class AuthController {
             body.password,
         );
         if (!created.success) {
-            throw new HttpException('user already exists', 401);
+            throw new HttpException('user already exist', 401);
         }
         const res = await this.authService.createUserJWT(
             body.email,
@@ -49,6 +50,7 @@ export class AuthController {
         }
         return {
             token: res.token,
+            status: 'success',
             user: {
                 email: res.User.email.toString(),
                 _id: res.User._id.toString(),
@@ -59,6 +61,17 @@ export class AuthController {
     @UseGuards(AuthGuard)
     @Get('check')
     async check(@Req() req) {
-        return req.user;
+        if (!req.user) {
+            throw new HttpException('Not found', 404);
+        }
+        const user = await this.authService.getUserById(req.user.userId);
+        if (!user) {
+            throw new HttpException('Not found', 404);
+        }
+
+        return {
+            status: 'success',
+            token: req.user,
+        };
     }
 }
