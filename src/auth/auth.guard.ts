@@ -4,6 +4,7 @@ import {
     Injectable,
     UnauthorizedException,
 } from '@nestjs/common';
+
 import { JwtService } from '@nestjs/jwt';
 import { Request } from 'express';
 import { jwtSecret } from 'src/const';
@@ -26,7 +27,7 @@ export class AuthGuard implements CanActivate {
             if (!payload) {
                 throw new UnauthorizedException();
             }
-            console.log('payload', payload);
+            //   console.log('payload', payload);
             const currentDate = Math.floor(Date.now() / 1000);
             const { expires } = payload;
             // console.log('currentDate', currentDate);
