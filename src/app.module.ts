@@ -13,7 +13,10 @@ import { DialogSchema } from './dialog/dialog.schema';
 import { DialogService } from './dialog/dialog.service';
 import { DialogAdmin } from './dialogAdmin/dialogAdmin.scheme';
 import { DialogAdminService } from './dialogAdmin/dialogAdmin.service';
-import { MessageSchema } from './messages/message.schema';
+import { MessageCounterService } from './message-counter/message-counter.service';
+import { MessageController } from './message/message.controller';
+import { MessageSchema } from './message/message.schema';
+import { MessageService } from './message/message.service';
 import { UserController } from './user/user.controller';
 import { UserSchema } from './user/user.schema';
 import { UserService } from './user/user.service';
@@ -50,6 +53,7 @@ import { UserCoreService } from './user/userCore.service';
         AuthController,
         UserController,
         DialogController,
+        MessageController,
     ],
     providers: [
         AppService,
@@ -60,6 +64,8 @@ import { UserCoreService } from './user/userCore.service';
         DialogAdminService,
         CompanionService,
         UserCoreService,
+        MessageService,
+        MessageCounterService,
     ],
 })
 export class AppModule {}

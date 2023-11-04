@@ -3,7 +3,7 @@ import mongoose, { HydratedDocument } from 'mongoose';
 
 import { ICompanion } from '../companion/companion.schema';
 import { IDialogAdmin } from '../dialogAdmin/dialogAdmin.scheme';
-import { IMessage } from '../messages/message.schema';
+import { IMessage } from '../message/message.schema';
 import { IUser } from '../user/user.schema';
 
 export type IDialog = HydratedDocument<Dialog>;
@@ -44,6 +44,12 @@ export class Dialog {
         type: [{ type: mongoose.Schema.Types.ObjectId, ref: 'DialogAdmin' }],
     })
     admins: IDialogAdmin[];
+
+    @Prop({
+        default: 0,
+        type: Number,
+    })
+    msgCount: number;
 }
 
 export const DialogSchema = SchemaFactory.createForClass(Dialog);
