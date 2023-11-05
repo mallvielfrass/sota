@@ -26,7 +26,9 @@ export class UserController {
         }
         const users = await this.userService.getAllUsers(body);
         const uResp: UserResponse[] = users.map((u) => {
-            return this.userService.convertIUserToDto(u);
+            const userRanged = this.userService.convertIUserToDto(u);
+            userRanged.isMe = userRanged._id === userId;
+            return userRanged;
         });
         return { users: uResp };
     }
@@ -41,7 +43,9 @@ export class UserController {
         if (!user) {
             throw new HttpException('Not found', 404);
         }
-        return { user: this.userService.convertIUserToDto(user) };
+        const userResp = this.userService.convertIUserToDto(user);
+        userResp.isMe = true;
+        return { user: userResp };
     }
     @Get('/:id')
     async getUserById(@Req() req, @Param('id') id) {
@@ -54,7 +58,9 @@ export class UserController {
         if (!user) {
             throw new HttpException('Not found', 404);
         }
-        return { user: this.userService.convertIUserToDto(user) };
+        const userResp = this.userService.convertIUserToDto(user);
+        userResp.isMe = userResp._id === userId;
+        return { user: userResp };
     }
     @Put('/')
     async updateUser(@Req() req) {

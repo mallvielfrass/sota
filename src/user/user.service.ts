@@ -75,6 +75,7 @@ export class UserService {
             isBanned: user.isBanned,
             username: user.username,
             avatar: user.avatar,
+            isMe: false,
         };
     }
 }

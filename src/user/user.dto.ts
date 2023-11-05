@@ -18,6 +18,7 @@ export class UserResponse {
     isBanned: boolean;
     avatar: string;
     _id: string;
+    isMe: boolean;
 }
 export class constraintsDto {
     @Optional()
