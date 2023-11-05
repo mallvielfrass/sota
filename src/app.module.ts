@@ -21,6 +21,8 @@ import { UserController } from './user/user.controller';
 import { UserSchema } from './user/user.schema';
 import { UserService } from './user/user.service';
 import { UserCoreService } from './user/userCore.service';
+import { StaticController } from './static/static.controller';
+import { StaticService } from './static/static.service';
 
 @Module({
     imports: [
@@ -54,6 +56,7 @@ import { UserCoreService } from './user/userCore.service';
         UserController,
         DialogController,
         MessageController,
+        StaticController,
     ],
     providers: [
         AppService,
@@ -66,6 +69,7 @@ import { UserCoreService } from './user/userCore.service';
         UserCoreService,
         MessageService,
         MessageCounterService,
+        StaticService,
     ],
 })
 export class AppModule {}
