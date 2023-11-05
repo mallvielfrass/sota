@@ -33,6 +33,24 @@ export class DialogController {
             dialogs: chats,
         };
     }
+    //get dialog by id
+    @Get('/:id')
+    async getDialogById(@Req() req, @Param('id') dialogId) {
+        const payload = req['user'];
+        const { userId } = payload;
+        if (!userId) {
+            throw new HttpException('Not found', 404);
+        }
+        const dialog = await this.dialogService.getDialogByIdForUser(
+            dialogId,
+            userId,
+        );
+        if (!dialog) {
+            throw new HttpException('Not found', 404);
+        }
+
+        return { dialog: dialog };
+    }
     @Post('/self')
     async createSelfChat(@Req() req) {
         const payload = req['user'];

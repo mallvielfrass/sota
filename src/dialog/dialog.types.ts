@@ -6,6 +6,9 @@ export enum DialogType {
 }
 export interface dialogResponse {
     _id: string;
-    chatType: DialogType;
+    chatType: string;
     name: string;
+    msgCount: number;
+    readedMessage: number;
+    owner: string;
 }

@@ -288,27 +288,32 @@ export class DialogService {
             );
         }
 
-        const dialogsList: dialogResponse[] = dialogsListRaw.map((dialog) => {
-            let dialogName =
-                dialog?.dialog?.name || 'Chat#' + dialog?.dialog?._id;
+        const dialogsList: dialogResponse[] = dialogsListRaw.map(
+            (dialog): dialogResponse => {
+                let dialogName =
+                    dialog?.dialog?.name || 'Chat#' + dialog?.dialog?._id;
 
-            if (dialog?.dialog?.chatType == DialogType.private) {
-                const usersFromChat = getNotUsersFromOneChat(dialog);
-                if (1 <= usersFromChat.length) {
-                    const name = userNamesMap.get(usersFromChat[0].toString());
-                    if (name && name != ' ') {
-                        dialogName = name;
+                if (dialog?.dialog?.chatType == DialogType.private) {
+                    const usersFromChat = getNotUsersFromOneChat(dialog);
+                    if (1 <= usersFromChat.length) {
+                        const name = userNamesMap.get(
+                            usersFromChat[0].toString(),
+                        );
+                        if (name && name != ' ') {
+                            dialogName = name;
+                        }
                     }
                 }
-            }
-            return {
-                _id: dialog?.dialog?._id || '',
-                chatType: dialog?.dialog?.chatType || '',
-                name: dialogName || '',
-                msgCount: dialog?.dialog?.msgCount || 0,
-                readedMessage: dialog?.readedMessage?.readedMessage || 0,
-            };
-        });
+                return {
+                    _id: dialog?.dialog?._id || '',
+                    chatType: dialog?.dialog?.chatType || '',
+                    name: dialogName || '',
+                    msgCount: dialog?.dialog?.msgCount || 0,
+                    readedMessage: dialog?.readedMessage?.readedMessage || 0,
+                    owner: dialog?.dialog?.owner?._id || '',
+                };
+            },
+        );
         return dialogsList;
     }
     async checkUserInDialog(
@@ -331,5 +336,32 @@ export class DialogService {
             return false;
         }
         return true;
+    }
+    async getDialogByIdForUser(
+        dialogId: string,
+        userId: string,
+    ): Promise<dialogResponse> {
+        const user = await this.userModel
+            .findOne({
+                _id: userId,
+                dialogs: {
+                    $elemMatch: {
+                        dialog: dialogId,
+                    },
+                },
+            })
+            .populate('dialogs.dialog');
+        if (!user) {
+            return null;
+        }
+        const dialog: dialogResponse = {
+            _id: user.dialogs[0].dialog._id.toString(),
+            chatType: user.dialogs[0].dialog.chatType,
+            name: user.dialogs[0].dialog.name,
+            msgCount: user.dialogs[0].dialog.msgCount,
+            readedMessage: user.dialogs[0].readedMessage,
+            owner: user.dialogs[0].dialog.owner._id.toString(),
+        };
+        return dialog;
     }
 }
