@@ -110,6 +110,7 @@ export class DialogController {
             await this.userCoreService.findUserById(yourCompanionId);
         return {
             dialog: {
+                _id: dialog._id.toString(),
                 chatType: dialog.chatType,
                 owner: dialog.owner._id.toString(),
                 companion: {
