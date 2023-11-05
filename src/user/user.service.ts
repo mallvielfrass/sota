@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
-import { UserDto, UserResponse } from './user.dto';
+import { UserDto, UserResponse, constraintsDto } from './user.dto';
 import { IUser, User } from './user.schema';
 
 @Injectable()
@@ -11,7 +11,28 @@ export class UserService {
         const user = await this.userModel.findOne({ email });
         return user;
     }
-    async createUser(email: string, hash: string) {
+    async getAllUsers(constraints: constraintsDto) {
+        const reverse = constraints.reverse ? -1 : 1;
+        const users = await this.userModel
+            .find()
+            .sort({ _id: reverse })
+            .skip(constraints.offset)
+            .limit(constraints.limit)
+            .select(
+                '_id firstName lastName isDeleted isBanned username email avatar',
+            )
+            .exec();
+        return users;
+    }
+    async createUser(
+        body: {
+            email: string;
+            username: string;
+            firstName: string;
+            lastName: string;
+        },
+        hash: string,
+    ) {
         const newUser = await this.userModel.create({
             email: body.email,
             hash: hash,

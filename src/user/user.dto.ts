@@ -1,3 +1,5 @@
+import { IsBoolean, IsNumber } from 'class-validator';
+
 import { Optional } from '@nestjs/common';
 
 export class UserDto {
@@ -16,4 +18,15 @@ export class UserResponse {
     isBanned: boolean;
     avatar: string;
     _id: string;
+}
+export class constraintsDto {
+    @Optional()
+    @IsNumber({ allowNaN: false, allowInfinity: false })
+    limit: number = 10;
+    @Optional()
+    @IsNumber({ allowNaN: false, allowInfinity: false })
+    offset: number = 0;
+    @Optional()
+    @IsBoolean()
+    reverse: boolean = false;
 }
