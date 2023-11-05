@@ -10,6 +10,7 @@ export interface MessageResponse {
     //  Id: string;
     cId: number;
     isMyMessage: boolean;
+    userFullName: string;
 }
 export enum MessageType {
     user = 'user',

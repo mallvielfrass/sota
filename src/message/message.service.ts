@@ -34,6 +34,7 @@ export class MessageService {
                     $ne: [userId, 'all'],
                 },
             })
+            .populate('user')
             .sort({ atCreated: reverse })
             .skip(constraints.offset)
             .limit(constraints.limit)
@@ -50,6 +51,8 @@ export class MessageService {
                 atCreated: message.atCreated,
                 atEdited: message.atEdited,
                 originalText: message.originalText,
+                userFullName:
+                    message.user.firstName + ' ' + message.user.lastName,
                 //    Id: message.Id,
                 cId: message.cId,
                 isMyMessage: message.user._id.toString() === userId,
