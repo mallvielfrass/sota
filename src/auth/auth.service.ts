@@ -5,6 +5,7 @@ import { Injectable } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { IUser } from 'src/user/user.schema';
 import { UserService } from 'src/user/user.service';
+import { DialogService } from '../dialog/dialog.service';
 import { UserCreateDto } from './auth.dto';
 
 //import { IUser } from 'src/database/user.schema';
@@ -18,6 +19,7 @@ export class AuthService {
     constructor(
         private readonly userService: UserService,
         private jwtService: JwtService,
+        private dialogService: DialogService,
     ) {}
     async createUserJWT(
         email: string,
@@ -71,7 +73,12 @@ export class AuthService {
             };
         }
         const hash = await EncryptPassword(password);
-        const newUser = await this.userService.createUser(email, hash);
+        const newUser = await this.userService.createUser(body, hash);
+
+        await this.dialogService.getOrCreatePrivateDialog(
+            newUser._id.toString(),
+            newUser._id.toString(),
+        );
         return {
             success: true,
             User: newUser,
