@@ -14,5 +14,6 @@ export class UserResponse {
     lastName: string;
     isDeleted: boolean;
     isBanned: boolean;
+    avatar: string;
     _id: string;
 }

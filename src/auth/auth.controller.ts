@@ -7,7 +7,7 @@ import {
     Req,
     UseGuards,
 } from '@nestjs/common';
-import { LoginDto } from './auth.dto';
+import { LoginDto, UserCreateDto } from './auth.dto';
 import { AuthGuard } from './auth.guard';
 import { AuthService } from './auth.service';
 
@@ -33,11 +33,8 @@ export class AuthController {
         };
     }
     @Post('register')
-    async register(@Body() body: LoginDto) {
-        const created = await this.authService.register(
-            body.email,
-            body.password,
-        );
+    async register(@Body() body: UserCreateDto) {
+        const created = await this.authService.register(body);
         if (!created.success) {
             throw new HttpException('user already exist', 401);
         }

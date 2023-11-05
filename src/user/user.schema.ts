@@ -29,9 +29,9 @@ export class User {
     firstName: string;
     @Prop()
     lastName: string;
-    @Prop()
+    @Prop({ default: false })
     isDeleted: boolean;
-    @Prop()
+    @Prop({ default: false })
     isBanned: boolean;
     @Prop({
         default: [],
@@ -52,6 +52,12 @@ export class User {
         readedMessage: number;
         dialog: IDialog;
     }[];
+    @Prop({ default: Date.now })
+    createdAt: Date;
+    @Prop({ default: Date.now })
+    updatedAt: Date;
+    @Prop({ default: 'default.png' })
+    avatar: string;
 }
 export const UserSchema = SchemaFactory.createForClass(User);
 // export const CatSchema = SchemaFactory.createForClass(Cat);

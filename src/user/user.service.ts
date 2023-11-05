@@ -13,9 +13,19 @@ export class UserService {
     }
     async createUser(email: string, hash: string) {
         const newUser = await this.userModel.create({
-            email: email,
+            email: body.email,
             hash: hash,
+            //	username: body.username,
+            firstName: body.firstName,
+            lastName: body.lastName,
+            isDeleted: false,
+            isBanned: false,
+            dialogs: [],
         });
+        if (!body.username || body.username == '') {
+            newUser.username = newUser._id.toString();
+            await newUser.save();
+        }
         return newUser;
     }
     async findUserById(_id: string) {
@@ -36,13 +46,14 @@ export class UserService {
     }
     convertIUserToDto(user: IUser): UserResponse {
         return {
-            email: user.email.toString(),
+            email: user.email,
             _id: user._id.toString(),
             firstName: user.firstName,
             lastName: user.lastName,
             isDeleted: user.isDeleted,
             isBanned: user.isBanned,
             username: user.username,
+            avatar: user.avatar,
         };
     }
 }

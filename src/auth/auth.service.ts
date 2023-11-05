@@ -5,6 +5,7 @@ import { Injectable } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { IUser } from 'src/user/user.schema';
 import { UserService } from 'src/user/user.service';
+import { UserCreateDto } from './auth.dto';
 
 //import { IUser } from 'src/database/user.schema';
 interface responseUser {
@@ -59,7 +60,8 @@ export class AuthService {
         }
         return false;
     }
-    async register(email: string, password: string): Promise<responseUser> {
+    async register(body: UserCreateDto): Promise<responseUser> {
+        const { email, password } = body;
         const user = await this.userService.findUserByEmail(email);
         if (user) {
             return {
