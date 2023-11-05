@@ -121,6 +121,7 @@ export class DialogService {
                 dialog: dialog,
             });
             await userTwo.save();
+            await dialog.save();
         }
 
         return { dialog };

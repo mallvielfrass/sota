@@ -66,6 +66,7 @@ export class DialogController {
             await this.userCoreService.findUserById(yourCompanionId);
         return {
             dialog: {
+                _id: dialog._id.toString(),
                 chatType: dialog.chatType,
                 owner: dialog.owner._id.toString(),
                 companion: {
@@ -104,7 +105,7 @@ export class DialogController {
             return companion.userId._id.toString() !== userId;
         });
         const yourCompanionId = yourCompanions.length
-            ? yourCompanions[0].companionId.user._id.toString()
+            ? yourCompanions[0].userId
             : userId;
         const yourCompanion =
             await this.userCoreService.findUserById(yourCompanionId);
