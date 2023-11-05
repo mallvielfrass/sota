@@ -311,4 +311,25 @@ export class DialogService {
         });
         return dialogsList;
     }
+    async checkUserInDialog(
+        dialogId: string,
+        userId: string,
+    ): Promise<boolean> {
+        const dialog = await this.dialogModel.findOne({
+            _id: dialogId,
+            $and: [
+                {
+                    companions: {
+                        $elemMatch: {
+                            userId: userId,
+                        },
+                    },
+                },
+            ],
+        });
+        if (!dialog) {
+            return false;
+        }
+        return true;
+    }
 }

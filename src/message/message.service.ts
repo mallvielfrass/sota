@@ -79,4 +79,7 @@ export class MessageService {
         });
         return { message };
     }
+    async checkUserInDialog(dialogId: string, userId: string) {
+        return await this.dialogService.checkUserInDialog(dialogId, userId);
+    }
 }

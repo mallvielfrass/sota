@@ -1,8 +1,17 @@
-import { Body, Controller, Param, Post, Req, UseGuards } from '@nestjs/common';
+import {
+    Body,
+    Controller,
+    Get,
+    HttpException,
+    Param,
+    Post,
+    Req,
+    UseGuards,
+} from '@nestjs/common';
 import { Request } from 'express';
 import { AuthGuard } from '../auth/auth.guard';
 import { DialogService } from '../dialog/dialog.service';
-import { MessageDto } from './message.dto';
+import { MessageDto, constraintsDto } from './message.dto';
 import { MessageService } from './message.service';
 
 @Controller('/api/message')
@@ -18,12 +27,12 @@ export class MessageController {
         const payload = req['user'];
         const { userId } = payload;
         const dialog = await this.dialogService.getPrivateChat(userId, userId);
-        const msg = await this.messageService.createMessage(
+        const res = await this.messageService.createMessage(
             dialog._id.toString(),
             userId,
             body,
         );
-        return { message: msg };
+        return { message: res.message };
     }
     //create new message for /:dialogId
     @Post('/:dialogId')
@@ -34,11 +43,35 @@ export class MessageController {
     ) {
         const payload = req['user'];
         const { userId } = payload;
-        const msg = await this.messageService.createMessage(
+        const res = await this.messageService.createMessage(
             dialogId,
             userId,
             body,
         );
-        return { message: msg };
+        return { message: res.message };
+    }
+
+    //get messages for /:dialogId with pagination constraintsDto
+    @Get('/:dialogId')
+    async getMessagesByDialogId(
+        @Param('dialogId') dialogId: string,
+        @Req() req: Request,
+        @Body() constDto: constraintsDto,
+    ) {
+        const payload = req['user'];
+        const { userId } = payload;
+        const checkUserInDialog = await this.dialogService.checkUserInDialog(
+            dialogId,
+            userId,
+        );
+        if (!checkUserInDialog) {
+            throw new HttpException('Not found', 404);
+        }
+        const messages = await this.messageService.getMessagesByDialogId(
+            dialogId,
+            userId,
+            constDto,
+        );
+        return { messages };
     }
 }
