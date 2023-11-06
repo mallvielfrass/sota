@@ -365,15 +365,49 @@ export class DialogService {
         if (!user) {
             return null;
         }
+        const dialog = user.dialogs[0].dialog;
+        let dialogName = dialog?.name || 'Chat#' + dialog?._id;
 
-        const dialog: dialogResponse = {
-            _id: user.dialogs[0].dialog._id.toString(),
-            chatType: user.dialogs[0].dialog.chatType,
-            name: user.dialogs[0].dialog.name,
-            msgCount: user.dialogs[0].dialog.msgCount,
+        if (dialog?.chatType == DialogType.private) {
+            const companions = dialog?.companions.map((companion) => {
+                return {
+                    companionId: companion.companionId.toString(),
+                    userId: companion.userId.toString(),
+                };
+            });
+            const usersFromChat = getNotUsersFromOneChat(
+                {
+                    chatType: dialog?.chatType,
+                    companions: companions,
+                },
+                userId,
+            );
+
+            const userNamesMap = new Map<string, string>();
+            const users =
+                await this.userCoreService.findUsersByIds(usersFromChat);
+            for (const user of users) {
+                userNamesMap.set(
+                    user._id.toString(),
+                    `${user.firstName} ${user.lastName}`,
+                );
+            }
+
+            if (1 <= usersFromChat.length) {
+                const name = userNamesMap.get(usersFromChat[0].toString());
+                if (name && name != ' ') {
+                    dialogName = name;
+                }
+            }
+        }
+        const dialogRes: dialogResponse = {
+            _id: dialog._id.toString(),
+            chatType: dialog.chatType,
+            name: dialogName,
+            msgCount: dialog.msgCount,
             readedMessage: user.dialogs[0].readedMessage,
-            owner: user.dialogs[0].dialog.owner._id.toString(),
+            owner: dialog.owner._id.toString(),
         };
-        return dialog;
+        return dialogRes;
     }
 }
