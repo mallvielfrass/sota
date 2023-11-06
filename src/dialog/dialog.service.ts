@@ -342,18 +342,30 @@ export class DialogService {
         userId: string,
     ): Promise<dialogResponse> {
         const user = await this.userModel
-            .findOne({
-                _id: userId,
-                dialogs: {
-                    $elemMatch: {
-                        dialog: dialogId,
+            .findOne(
+                {
+                    _id: userId,
+                    dialogs: {
+                        $elemMatch: {
+                            dialog: dialogId,
+                        },
                     },
                 },
-            })
-            .populate('dialogs.dialog');
+                {
+                    dialogs: {
+                        $elemMatch: {
+                            dialog: dialogId,
+                        },
+                    },
+                },
+            )
+            .populate({
+                path: 'dialogs.dialog',
+            });
         if (!user) {
             return null;
         }
+
         const dialog: dialogResponse = {
             _id: user.dialogs[0].dialog._id.toString(),
             chatType: user.dialogs[0].dialog.chatType,
