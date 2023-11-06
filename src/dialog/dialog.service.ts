@@ -9,6 +9,43 @@ import { userStatus } from '../dialogAdmin/dialogAdmin.types';
 import { Dialog } from './dialog.schema';
 import { DialogType, dialogResponse } from './dialog.types';
 
+const getNotUsersFromOneChat = (
+    dialog: {
+        chatType: string;
+        companions: { companionId: string; userId: string }[];
+    },
+    userId,
+) => {
+    const privateChatsUsers = [];
+    try {
+        if (dialog?.chatType == DialogType.private) {
+            const companions = dialog?.companions;
+
+            if (!companions || !Array.isArray(companions)) {
+                return [];
+            }
+            const notUser = companions.filter(
+                (companion: { companionId: string; userId: string }) => {
+                    return companion.userId.toString() !== userId.toString();
+                },
+            );
+            if (notUser.length !== 1) {
+                return [];
+            }
+            privateChatsUsers.push(notUser[0].userId);
+        }
+    } catch (error) {
+        console.log('getNotUsersFromOneChat>', error);
+    }
+    return privateChatsUsers;
+};
+const getNotUsersInAllChats = (dialogsListRaw, userId) => {
+    const privateChatsUsers = [];
+    dialogsListRaw.forEach((dialog) => {
+        privateChatsUsers.push(getNotUsersFromOneChat(dialog?.dialog, userId));
+    });
+    return privateChatsUsers;
+};
 @Injectable()
 export class DialogService {
     constructor(
@@ -251,33 +288,8 @@ export class DialogService {
         if (!Array.isArray(dialogsListRaw)) {
             return [];
         }
-        const getNotUsersFromOneChat = (dialog) => {
-            const privateChatsUsers = [];
-            if (dialog?.dialog?.chatType == DialogType.private) {
-                const companions = dialog?.dialog?.companions;
-                if (!companions || !Array.isArray(companions)) {
-                    return [];
-                }
-                const notUser = companions.filter(
-                    (companion: { companionId: string; userId: string }) => {
-                        return companion.userId !== userId;
-                    },
-                );
-                if (notUser.length !== 1) {
-                    return [];
-                }
-                privateChatsUsers.push(notUser[0].userId);
-            }
-            return privateChatsUsers;
-        };
-        const getNotUsersInAllChats = () => {
-            const privateChatsUsers = [];
-            dialogsListRaw.forEach((dialog) => {
-                privateChatsUsers.push(getNotUsersFromOneChat(dialog));
-            });
-            return privateChatsUsers;
-        };
-        const privateChatsUsers = getNotUsersInAllChats();
+
+        const privateChatsUsers = getNotUsersInAllChats(dialogsListRaw, userId);
         const userNamesMap = new Map<string, string>();
         const users =
             await this.userCoreService.findUsersByIds(privateChatsUsers);
@@ -294,7 +306,10 @@ export class DialogService {
                     dialog?.dialog?.name || 'Chat#' + dialog?.dialog?._id;
 
                 if (dialog?.dialog?.chatType == DialogType.private) {
-                    const usersFromChat = getNotUsersFromOneChat(dialog);
+                    const usersFromChat = getNotUsersFromOneChat(
+                        dialog?.dialog,
+                        userId,
+                    );
                     if (1 <= usersFromChat.length) {
                         const name = userNamesMap.get(
                             usersFromChat[0].toString(),
