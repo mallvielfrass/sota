@@ -48,6 +48,9 @@ export class MessageController {
             userId,
             body,
         );
+        if (res.error) {
+            throw new HttpException(res.error, 400);
+        }
         return { message: res.message };
     }
 
