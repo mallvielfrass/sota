@@ -3,6 +3,8 @@ import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import { DialogService } from '../dialog/dialog.service';
 import { MessageCounterService } from '../message-counter/message-counter.service';
+import { SocketGateway } from '../socket/socket.gateway';
+import { SocketService } from '../socket/socket.service';
 import { MessageDto } from './message.dto';
 import { Message } from './message.schema';
 import { MessageResponse, MessageType } from './message.types';
@@ -14,6 +16,8 @@ export class MessageService {
         private readonly messageModel: Model<Message>,
         private readonly dialogService: DialogService,
         private readonly messageCounterService: MessageCounterService,
+        private readonly socketGateway: SocketGateway,
+        private readonly socketService: SocketService,
     ) {}
 
     async getMessagesByDialogId(
@@ -80,6 +84,12 @@ export class MessageService {
             cId: msgId,
             isDeletedFor: [],
         });
+
+        this.socketService.emitNewMessageToDialog(
+            dialogId,
+            userId,
+            message.toObject(),
+        );
         return { message };
     }
     async checkUserInDialog(dialogId: string, userId: string) {

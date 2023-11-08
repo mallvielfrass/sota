@@ -17,12 +17,13 @@ import { MessageCounterService } from './message-counter/message-counter.service
 import { MessageController } from './message/message.controller';
 import { MessageSchema } from './message/message.schema';
 import { MessageService } from './message/message.service';
+import { SocketModule } from './socket/socket.module';
+import { StaticController } from './static/static.controller';
+import { StaticService } from './static/static.service';
 import { UserController } from './user/user.controller';
 import { UserSchema } from './user/user.schema';
 import { UserService } from './user/user.service';
 import { UserCoreService } from './user/userCore.service';
-import { StaticController } from './static/static.controller';
-import { StaticService } from './static/static.service';
 
 @Module({
     imports: [
@@ -49,6 +50,7 @@ import { StaticService } from './static/static.service';
                 schema: DialogSchema,
             },
         ]),
+        SocketModule,
     ],
     controllers: [
         AppController,
