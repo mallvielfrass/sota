@@ -8,6 +8,7 @@ import {
 } from '@nestjs/websockets';
 import { Server, Socket } from 'socket.io';
 
+import { checkAccess } from './socket.decorators';
 import { SocketService } from './socket.service';
 
 @WebSocketGateway({
@@ -42,7 +43,13 @@ export class SocketGateway
     async handleAuth(client: Socket, data: any) {
         console.log(`Client ${client.id} sent: [${data}]`);
         await this.socketService.auth(client, data);
-        client.emit('auth', 'hello from server');
+        //  client.emit('auth', 'hello from server');
+    }
+    @SubscribeMessage('check')
+    @checkAccess()
+    async handleCheck(client: Socket, data: any) {
+        console.log(`Client ${client.id} sent: [${data}]`);
+        client.emit('check', 'ok');
     }
 
     @SubscribeMessage('msgToServer')

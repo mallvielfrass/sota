@@ -2,13 +2,24 @@ import { Server, Socket } from 'socket.io';
 
 import { CACHE_MANAGER } from '@nestjs/cache-manager';
 import { Inject, Injectable } from '@nestjs/common';
+import { JwtService } from '@nestjs/jwt';
 import { Cache } from 'cache-manager';
+import { jwtSecret } from '../const';
+import {
+    anyToJson,
+    validateAndParseDto,
+} from '../utils/validation/dtoValidator';
+import { AuthorizationDto } from './socket.dto';
+import { Payload } from './socket.types';
 
 @Injectable()
 export class SocketService {
     private readonly connectedClients: Map<string, Socket> = new Map();
     private server: Server;
-    constructor(@Inject(CACHE_MANAGER) private cacheManager: Cache) {}
+    constructor(
+        @Inject(CACHE_MANAGER) private cacheManager: Cache,
+        private jwtService: JwtService,
+    ) {}
     initService(server: Server): void {
         this.server = server;
     }
@@ -18,10 +29,40 @@ export class SocketService {
     handleDisconnect(client: Socket) {
         this.connectedClients.delete(client.id);
     }
-
+    async checkClientIsAuthorized(clientId: string) {
+        //   console.log('checkClientIsAuthorized>:', clientId);
+        const user = await this.cacheManager.get(`${clientId}`);
+        //   console.log('checkClientIsAuthorized> user', user);
+        return !!user;
+    }
     async auth(client: Socket, data: any): Promise<void> {
         console.log(`Client ${client.id} sent: [${data}]`);
-        //const user = await this.cacheManager.get(`user:${data}`);
+        const jsBody = anyToJson(data);
+        if (jsBody.error) {
+            console.log('error', jsBody.error);
+            client.emit('auth', { error: 'invalid json object' });
+            return;
+        }
+
+        const body = await validateAndParseDto(AuthorizationDto, jsBody.data);
+        if (!body) {
+            client.emit('auth', { error: 'invalid dto type' });
+            return;
+        }
+        const token = body.Authorization.split(' ')[1];
+        const payload = await this.jwtService.verifyAsync(token, {
+            secret: jwtSecret,
+        });
+        if (!payload) {
+            client.emit('auth', { error: 'invalid token' });
+            return;
+        }
+        const user = payload as Payload;
+        await this.cacheManager.set(`${client.id}`, user, 4 * 60 * 60 * 1000);
+        //  const checkUser = await this.cacheManager.get(`${client.id}`);
+        //     console.log(`auth> checkUser :client:${client.id}:`, checkUser);
+        client.emit('auth', { status: 'success', user: user });
+        //const user = await this.cacheManager.get(`client:${data}`);
     }
     // handleConnection(socket: Socket): void {
     //     const clientId = socket.id;
