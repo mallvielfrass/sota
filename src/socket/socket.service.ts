@@ -43,6 +43,11 @@ export class SocketService {
             client.emit('auth', { error: 'invalid json object' });
             return;
         }
+        if (!jsBody.data) {
+            console.log('error', jsBody.error);
+            client.emit('auth', { error: 'invalid json object' });
+            return;
+        }
 
         const parseResp = await validateAndParseDto(
             AuthorizationDto,
