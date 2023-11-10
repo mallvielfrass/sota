@@ -44,11 +44,18 @@ export class SocketService {
             return;
         }
 
-        const body = await validateAndParseDto(AuthorizationDto, jsBody.data);
-        if (!body) {
-            client.emit('auth', { error: 'invalid dto type' });
+        const parseResp = await validateAndParseDto(
+            AuthorizationDto,
+            jsBody.data,
+        );
+        if (!parseResp.status) {
+            client.emit('auth', {
+                error: 'invalid dto type',
+                reason: parseResp.error,
+            });
             return;
         }
+        const body = parseResp.Data;
         const token = body.Authorization.split(' ')[1];
         const payload = await this.jwtService.verifyAsync(token, {
             secret: jwtSecret,
