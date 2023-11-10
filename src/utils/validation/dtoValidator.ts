@@ -8,7 +8,8 @@ export const validationPipe = async (
 ) => {
     const errorsRes: Array<string> = [];
     try {
-        const transformedClass: any = plainToInstance(schema, requestObject);
+        const transformedClass = plainToInstance(schema, requestObject);
+
         const errors = await validate(transformedClass);
         if (errors.length > 0) {
             errors.forEach((error) => {
@@ -20,7 +21,7 @@ export const validationPipe = async (
         }
         return { status: true, error: [] };
     } catch (error) {
-        // console.log('error', error);
+        console.log('error', error);
         return { status: false, error: [error] };
     }
 };
