@@ -24,16 +24,40 @@ export const validationPipe = async (
         return { status: false, error: [error] };
     }
 };
+interface validatedResponse<T> {
+    status: boolean;
+    error: Array<string>;
+    Data: NonNullable<T>;
+}
 export const validateAndParseDto = async <T>(
     validationSchema: new () => T,
     body: any,
-): Promise<NonNullable<T>> => {
-    const result: any = await validationPipe(validationSchema as any, body);
-    if (!result) {
-        return null;
+): Promise<validatedResponse<T>> => {
+    if (!body) {
+        return {
+            status: false,
+            error: ['body must be an object'],
+            Data: null,
+        };
+    }
+    if (typeof body !== 'object') {
+        return {
+            status: false,
+            error: ['body must be an object'],
+            Data: null,
+        };
     }
 
-    return body as T;
+    const result = await validationPipe(validationSchema as any, body);
+    if (!result.status) {
+        return {
+            status: false,
+            error: result.error,
+            Data: null,
+        };
+    }
+    const typedBody = body as T;
+    return { status: true, error: [], Data: typedBody };
 };
 // export function returnTyped<T>(value: T): T {
 //     return value;
@@ -42,6 +66,9 @@ export const anyToJson = (data: any) => {
     try {
         if (typeof data === 'object') {
             return { data: data };
+        }
+        if (typeof data !== 'string') {
+            return { error: 'data must be a string' };
         }
         return { data: JSON.parse(data) };
     } catch (error) {
