@@ -5,20 +5,23 @@ import { Inject, Injectable } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { Cache } from 'cache-manager';
 import { jwtSecret } from '../const';
+import { DialogCheckerService } from '../dialog-checker/dialogChecker.service';
 import {
     anyToJson,
     validateAndParseDto,
 } from '../utils/validation/dtoValidator';
-import { AuthorizationDto } from './socket.dto';
+import { AuthorizationDto, JoinDto } from './socket.dto';
 import { Payload } from './socket.types';
 
 @Injectable()
 export class SocketService {
     private readonly connectedClients: Map<string, Socket> = new Map();
     private server: Server;
+
     constructor(
         @Inject(CACHE_MANAGER) private cacheManager: Cache,
         private jwtService: JwtService,
+        private dialogChecker: DialogCheckerService,
     ) {}
     initService(server: Server): void {
         this.server = server;
@@ -76,6 +79,60 @@ export class SocketService {
         client.emit('auth', { status: 'success', user: user });
         //const user = await this.cacheManager.get(`client:${data}`);
     }
+    async joinRoom(client: Socket, data: any) {
+        console.log('joinRoom>:', data);
+        const jsBody = anyToJson(data);
+        if (jsBody.error) {
+            console.log('error', jsBody.error);
+            client.emit('service', {
+                event: 'join',
+                error: 'invalid json object',
+            });
+            return;
+        }
+        if (!jsBody.data) {
+            console.log('error', jsBody.error);
+            client.emit('service', {
+                event: 'join',
+                error: 'invalid json object',
+            });
+            return;
+        }
+        const parseResp = await validateAndParseDto(JoinDto, jsBody.data);
+        if (!parseResp.status) {
+            client.emit('service', {
+                event: 'join',
+                error: 'invalid dto type',
+                reason: parseResp.error,
+            });
+            return;
+        }
+        const user = (await this.cacheManager.get(`${client.id}`)) as Payload;
+        if (!user) {
+            client.emit('service', {
+                event: 'join',
+                error: 'user not authorized',
+            });
+            return;
+        }
+        const checkUserInDialog = await this.dialogChecker.checkUserInDialog(
+            parseResp.Data.dialogId,
+            user.userId,
+        );
+        if (!checkUserInDialog) {
+            client.emit('service', {
+                event: 'join',
+                error: 'user not found in dialog',
+            });
+            return;
+        }
+
+        client.join(parseResp.Data.dialogId);
+        client.emit('service', {
+            event: 'join',
+            status: 'success',
+        });
+    }
     // handleConnection(socket: Socket): void {
     //     const clientId = socket.id;
     //     this.server = socket;
@@ -115,7 +172,9 @@ export class SocketService {
         message: object,
     ) {
         console.log('emiting to dialog', dialogId, userId, message);
-        const status = this.server.to(dialogId).emit('message', message);
+        const status = this.server
+            .to(dialogId)
+            .emit('message', { dialogId, userId, message });
         console.log('status', status);
     }
     // Add more methods for handling events, messages, etc.

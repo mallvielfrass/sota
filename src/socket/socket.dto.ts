@@ -8,3 +8,8 @@ export class AuthorizationDto {
     @IsBearer()
     Authorization: string;
 }
+export class JoinDto {
+    @IsString()
+    @IsNotEmpty()
+    dialogId: string;
+}

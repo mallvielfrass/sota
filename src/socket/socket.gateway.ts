@@ -62,6 +62,11 @@ export class SocketGateway
         console.log(`Client ${client.id} sent: [${data}]`);
         client.emit('message', 'hello from server');
     }
+    @SubscribeMessage('join')
+    @checkAccess()
+    async handleJoin(client: Socket, data: any) {
+        this.socketService.joinRoom(client, data);
+    }
 }
 
 // @WebSocketGateway({
