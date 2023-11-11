@@ -8,6 +8,7 @@ import { AuthService } from './auth/auth.service';
 import { CompanionSchema } from './companion/companion.schema';
 import { CompanionService } from './companion/companion.service';
 import { db_url } from './const';
+import { DialogCheckerService } from './dialog-checker/dialogChecker.service';
 import { DialogController } from './dialog/dialog.controller';
 import { DialogSchema } from './dialog/dialog.schema';
 import { DialogService } from './dialog/dialog.service';
@@ -72,6 +73,7 @@ import { UserCoreService } from './user/userCore.service';
         MessageService,
         MessageCounterService,
         StaticService,
+        DialogCheckerService,
     ],
 })
 export class AppModule {}

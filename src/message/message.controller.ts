@@ -10,6 +10,7 @@ import {
 } from '@nestjs/common';
 import { Request } from 'express';
 import { AuthGuard } from '../auth/auth.guard';
+import { DialogCheckerService } from '../dialog-checker/dialogChecker.service';
 import { DialogService } from '../dialog/dialog.service';
 import { MessageDto, constraintsDto } from './message.dto';
 import { MessageService } from './message.service';
@@ -20,6 +21,7 @@ export class MessageController {
     constructor(
         private readonly messageService: MessageService,
         private readonly dialogService: DialogService,
+        private readonly dialogCheckerService: DialogCheckerService,
     ) {}
     //create self message
     @Post('/self')
@@ -63,10 +65,8 @@ export class MessageController {
     ) {
         const payload = req['user'];
         const { userId } = payload;
-        const checkUserInDialog = await this.dialogService.checkUserInDialog(
-            dialogId,
-            userId,
-        );
+        const checkUserInDialog =
+            await this.dialogCheckerService.checkUserInDialog(dialogId, userId);
         if (!checkUserInDialog) {
             throw new HttpException('Not found', 404);
         }

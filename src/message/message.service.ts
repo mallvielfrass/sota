@@ -1,6 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
+import { DialogCheckerService } from '../dialog-checker/dialogChecker.service';
 import { DialogService } from '../dialog/dialog.service';
 import { MessageCounterService } from '../message-counter/message-counter.service';
 import { SocketGateway } from '../socket/socket.gateway';
@@ -18,6 +19,7 @@ export class MessageService {
         private readonly messageCounterService: MessageCounterService,
         private readonly socketGateway: SocketGateway,
         private readonly socketService: SocketService,
+        private readonly dialogCheckerService: DialogCheckerService,
     ) {}
 
     async getMessagesByDialogId(
@@ -93,6 +95,9 @@ export class MessageService {
         return { message };
     }
     async checkUserInDialog(dialogId: string, userId: string) {
-        return await this.dialogService.checkUserInDialog(dialogId, userId);
+        return await this.dialogCheckerService.checkUserInDialog(
+            dialogId,
+            userId,
+        );
     }
 }
