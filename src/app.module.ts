@@ -25,6 +25,9 @@ import { UserController } from './user/user.controller';
 import { UserSchema } from './user/user.schema';
 import { UserService } from './user/user.service';
 import { UserCoreService } from './user/userCore.service';
+import { BotController } from './bot/bot.controller';
+import { BotService } from './bot/bot.service';
+import { OnlineService } from './online/online.service';
 
 @Module({
     imports: [
@@ -60,6 +63,7 @@ import { UserCoreService } from './user/userCore.service';
         DialogController,
         MessageController,
         StaticController,
+        BotController,
     ],
     providers: [
         AppService,
@@ -74,6 +78,8 @@ import { UserCoreService } from './user/userCore.service';
         MessageCounterService,
         StaticService,
         DialogCheckerService,
+        BotService,
+        OnlineService,
     ],
 })
 export class AppModule {}
