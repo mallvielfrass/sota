@@ -27,7 +27,8 @@ jobs:
             - name: Run command on remote server
               uses: D3rHase/ssh-command-action@v0.2.2
               env:
-                  PORT: ${{ secrets.PORT }}
+                  PORT: ${{ secrets.DEPLOY_PORT }}
+                  APP_PORT: ${{ secrets.APP_PORT }}
                   DB_URL: ${{ secrets.DB_URL }}
                   JWT_SECRET: ${{ secrets.JWT_SECRET }}
               with:
