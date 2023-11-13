@@ -27,10 +27,12 @@ jobs:
             - name: Run command on remote server
               uses: D3rHase/ssh-command-action@v0.2.2
               env:
-                  PORT: ${{ secrets.DEPLOY_PORT }}
+                  PORT: ${{ secrets.PORT }}
+                  DB_URL: ${{ secrets.DB_URL }}
+                  JWT_SECRET: ${{ secrets.JWT_SECRET }}
               with:
                   host: ${{secrets.SSH_HOST}}
                   user: ${{secrets.SSH_USER}}
                   private_key: ${{secrets.SSH_PRIVATE_KEY}}
                   port: ${{ secrets.DEPLOY_PORT }}
-                  command: echo Hello, world!
+                  command: docker-compose up -d --build
