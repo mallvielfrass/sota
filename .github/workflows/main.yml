@@ -16,4 +16,4 @@ jobs:
 
       - name: Deploy on the Same Server
         run: |
-          ssh -o StrictHostKeyChecking=no localhost 'cd /path/to/your/project && docker-compose pull && docker-compose up -d --build'
+         ls&& cd /sota && docker-compose pull && docker-compose up -d --build
