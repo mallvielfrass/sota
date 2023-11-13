@@ -8,32 +8,37 @@ on:
 
 # jobs запускаются параллельно, если не указана последовательность
 jobs:
-    # Название job вы можете назвать как угодно
-    my_build_job:
-        # Операционная система в виртуальной машине, в которой запускаются процессы
-        runs-on:
-            ubuntu-latest
-            # Шаги
-        steps:
-            # Actions от github: проверяет репозиторий, гит и т.д.
-            - uses: actions/checkout@v3
+    # # Название job вы можете назвать как угодно
+    # my_build_job:
+    #     # Операционная система в виртуальной машине, в которой запускаются процессы
+    #     runs-on:
+    #         ubuntu-latest
+    #         # Шаги
+    #     steps:
+    #         # Actions от github: проверяет репозиторий, гит и т.д.
+    #         - uses: actions/checkout@v3
 
-            # Пример однолинейного простого скрипта shell
-            - name: Run a one-line script
-              run: echo Hello, world!
-    deploy:
-        runs-on: ubuntu-latest
+    #         # Пример однолинейного простого скрипта shell
+    #         - name: Run a one-line script
+    #           run: echo Hello, world!
+    deploy-on-self-hosted:
+        runs-on: self-hosted
         steps:
             - name: Run command on remote server
-              uses: D3rHase/ssh-command-action@v0.2.2
-              env:
-                  PORT: ${{ secrets.DEPLOY_PORT }}
-                  APP_PORT: ${{ secrets.APP_PORT }}
-                  DB_URL: ${{ secrets.DB_URL }}
-                  JWT_SECRET: ${{ secrets.JWT_SECRET }}
-              with:
-                  host: ${{secrets.SSH_HOST}}
-                  user: ${{secrets.SSH_USER}}
-                  private_key: ${{secrets.SSH_PRIVATE_KEY}}
-                  port: ${{ secrets.DEPLOY_PORT }}
-                  command:  ls&&  docker-compose up -d --build
+              command:  ls&&  docker-compose up -d --build
+    # deploy:
+    #     runs-on: self-hosted
+    #     steps:
+    #         - name: Run command on remote server
+    #           uses: D3rHase/ssh-command-action@v0.2.2
+    #           env:
+    #               PORT: ${{ secrets.DEPLOY_PORT }}
+    #               APP_PORT: ${{ secrets.APP_PORT }}
+    #               DB_URL: ${{ secrets.DB_URL }}
+    #               JWT_SECRET: ${{ secrets.JWT_SECRET }}
+    #           with:
+    #               host: ${{secrets.SSH_HOST}}
+    #               user: ${{secrets.SSH_USER}}
+    #               private_key: ${{secrets.SSH_PRIVATE_KEY}}
+    #               port: ${{ secrets.DEPLOY_PORT }}
+    #               command:  ls&&  docker-compose up -d --build
