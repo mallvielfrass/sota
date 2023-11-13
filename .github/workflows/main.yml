@@ -16,4 +16,4 @@ jobs:
 
       - name: Deploy on the Same Server
         run: |
-         ls&& cd /sota && docker-compose pull && docker-compose up -d --build
+         ls&&docker-compose pull && docker-compose up -d --build
