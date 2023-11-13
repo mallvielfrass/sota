@@ -36,6 +36,4 @@ jobs:
                   user: ${{secrets.SSH_USER}}
                   private_key: ${{secrets.SSH_PRIVATE_KEY}}
                   port: ${{ secrets.DEPLOY_PORT }}
-                  command: |
-                  ls
-                  docker-compose up -d --build
+                  command:  ls&&  docker-compose up -d --build
