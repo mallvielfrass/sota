@@ -14,18 +14,17 @@ jobs:
     steps:
       - name: Checkout Repository
         uses: actions/checkout@v2
-      - name: 'Create env file'
-        env:
-          PORT: ${{ secrets.DEPLOY_PORT }}
-          APP_PORT: ${{ secrets.APP_PORT }}
-          DB_URL: ${{ secrets.DB_URL }}
-          JWT_SECRET: ${{ secrets.JWT_SECRET }}
+
+      - name: Create .env file
         run: |
-          touch .env
-          echo "PORT=${PORT}" >> .env
-          echo "APP_PORT=${APP_PORT}" >> .env
-          echo "DB_URL=${DB_URL}" >> .env
-          echo "JWT_SECRET=${JWT_SECRET}" >> .env
+          echo "PORT=${{ secrets.DEPLOY_PORT }}" > .env
+          echo "APP_PORT=${{ secrets.APP_PORT }}" >> .env
+          echo "DB_URL=${{ secrets.DB_URL }}" >> .env
+          echo "JWT_SECRET=${{ secrets.JWT_SECRET }}" >> .env
+
+      - name: Display .env file
+        run: |
+          cat .env
       - name: Deploy on the Same Server
         run: |
          ls&&docker-compose pull && docker-compose up -d --build
